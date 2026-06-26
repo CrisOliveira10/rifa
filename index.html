@@ -8,49 +8,32 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: #0f172a; color: #f8fafc; overflow-x: hidden; }
-        
-        /* Altura dinamica dvh e layout responsivo */
-        .page { width: 100vw; height: 100dvh; display: none; position: relative; }
+        body { background: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100dvh; margin: 0; color: #f8fafc; }
+        #app-frame { width: 100%; max-width: 430px; height: 100dvh; background: #0f172a; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.15); overflow: hidden; }
+        .page { width: 100%; height: 100%; display: none; overflow-y: auto; overflow-x: hidden; position: absolute; top: 0; left: 0; }
         .page.active { display: block; }
-
-        /* Página 1: Capa */
-        #p1 { background: url('https://res.cloudinary.com/dtshawz5x/image/upload/v1782489878/C%C3%B3pia_de_Ch%C3%A1_rifa_ursinha_adlwm1.png') center center no-repeat; background-size: cover; }
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(15,23,42,0.95) 100%); }
-        .content-capa { position: relative; z-index: 10; height: 100dvh; display: flex; flex-direction: column; justify-content: space-between; padding: 40px 25px; text-align: center; }
-        .capa-header h1 { font-size: 28px; font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .capa-header p { font-size: 15px; margin-top: 10px; color: #cbd5e1; }
-        
-        /* Botões na lateral do rodapé */
+        .page:not(#p1) { background-color: #0f172a; }
+        #p1 { background: url('https://res.cloudinary.com/dtshawz5x/image/upload/v1782492391/capa_qgyjrl.png') center center no-repeat; background-size: cover; }
+        .content-capa { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px 25px; text-align: center; position: relative; z-index: 10; }
         .capa-footer { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .btn-audio { background: rgba(255,255,255,0.15); border: 2px solid #fff; border-radius: 50%; width: 50px; height: 50px; color: white; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; }
+        .btn-audio { background: rgba(0,0,0,0.3); border: 2px solid #fff; border-radius: 50%; width: 50px; height: 50px; color: white; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; }
         .btn-proximo { background: #3b82f6; color: white; border: none; padding: 15px 35px; border-radius: 30px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(59,130,246,0.4); }
-
-        /* Página 2: Grid */
-        #page2 { padding: 20px; height: 100dvh; overflow-y: auto; }
+        #p2 { padding: 20px; }
         .grid-header { margin-bottom: 20px; text-align: center; }
         .grid-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 500px; margin: 0 auto; padding-bottom: 40px; }
         .num-box { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; cursor: pointer; font-size: 14px; transition: transform 0.1s; }
         .num-box:active { transform: scale(0.9); }
-        
-        /* Legendas */
         .legendas { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; font-size: 12px; }
         .leg-item { display: flex; align-items: center; gap: 5px; }
         .leg-cor { width: 15px; height: 15px; border-radius: 3px; }
-
-        /* Modal Formulário */
-        .modal { display: none; position: fixed; top:0; left:0; width:100vw; height:100dvh; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #1e293b; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #1e293b; padding: 25px; border-radius: 12px; width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .modal-content h3 { margin-bottom: 15px; }
         .modal-content input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #475569; background: #0f172a; color: white; border-radius: 6px; }
         .modal-btn { background: #10b981; color: white; border: none; padding: 12px; width:100%; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
-        /* Página 3: Sucesso */
-        .sucesso-box { height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .sucesso-box { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
         .btn-whatsapp { background: #25d366; color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; margin-top: 20px; display: inline-block; }
-
-        /* Página 4: Painel Admin */
-        #page4 { padding: 25px; height: 100dvh; overflow-y: auto; background: #0f172a; }
+        #p4 { padding: 25px; }
         .admin-auth, .admin-dashboard { max-width: 600px; margin: 0 auto; }
         .lista-pedidos { background: #1e293b; border-radius: 8px; padding: 15px; margin-top: 20px; }
         .pedido-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #334155; font-size: 14px; }
@@ -60,257 +43,86 @@
     </style>
 </head>
 <body>
-
     <audio id="bg-audio" loop src="audio.mp3"></audio>
-
-    <div class="page active" id="p1">
-        <div class="overlay"></div>
-        <div class="content-capa">
-            <div class="capa-header">
-                <h1>Chá Rifa Digital Sophie</h1>
-                <p>Participe e concorra ao prémio de R$300,00</p>
-            </div>
-            <div class="capa-footer">
-                <button class="btn-audio" onclick="toggleAudio()">🔊</button>
-                <button class="btn-proximo" onclick="irPara(2)">Participar ➔</button>
+    <div id="app-frame">
+        <div class="page active" id="p1">
+            <div class="content-capa">
+                <div class="capa-footer">
+                    <button class="btn-audio" onclick="toggleAudio()">🔊</button>
+                    <button class="btn-proximo" onclick="irPara(2)">Participar ➔</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="page" id="p2">
-        <div class="grid-header">
-            <h2>Escolha os seus Números</h2>
-            <p style="font-size:13px; color:#94a3b8; margin-top:5px;">Clique em cima do número disponível</p>
+        <div class="page" id="p2">
+            <div class="grid-header">
+                <h1 style="color: #fff; font-size: 24px; margin-bottom: 5px;">Chá Rifa Digital Sophie</h1>
+                <p style="color: #cbd5e1; margin-bottom: 15px; font-size: 14px;">Participe e concorra a prémio de R$ 300,00</p>
+                <h2 style="color: #fff; font-size: 18px;">Escolha os seus Números</h2>
+                <p style="font-size:13px; color:#94a3b8; margin-top:5px;">Clique em cima do número disponível</p>
+            </div>
+            <div class="legendas">
+                <div class="leg-item"><div class="leg-cor" style="background:#cbd5e1"></div> Livre</div>
+                <div class="leg-item"><div class="leg-cor" style="background:#f59e0b"></div> Reservado</div>
+                <div class="leg-item"><div class="leg-cor" style="background:#10b981"></div> Pago</div>
+            </div>
+            <div class="grid-container" id="container-numbers"></div>
         </div>
-        <div class="legendas">
-            <div class="leg-item"><div class="leg-cor" style="background:#cbd5e1"></div> Livre</div>
-            <div class="leg-item"><div class="leg-cor" style="background:#f59e0b"></div> Reservado</div>
-            <div class="leg-item"><div class="leg-cor" style="background:#10b981"></div> Pago</div>
-        </div>
-        <div class="grid-container" id="container-numbers"></div>
-    </div>
 
-    <div class="modal" id="modal-cadastro">
-        <div class="modal-content">
-            <h3>Reservar Número <span id="modal-num-display">0</span></h3>
-            <label>Seu Nome:</label>
-            <input type="text" id="user-nome" placeholder="Nome Completo">
-            <label>Seu Telefone / WhatsApp:</label>
-            <input type="text" id="user-tel" placeholder="(00) 00000-0000">
-            <button class="modal-btn" onclick="confirmarReserva()">Confirmar Escolha</button>
+        <div class="page" id="p3">
+            <div class="sucesso-box">
+                <h1 style="color:#10b981;">Reserva Confirmada!</h1>
+                <p style="margin-top:15px; color:#cbd5e1;">O seu número foi pré-reservado no sistema. Para garantir a sua participação, envie o comprovante por WhatsApp.</p>
+                <div id="sucesso-detalhes" style="font-weight:bold; font-size:18px; margin:20px 0; color:#f59e0b;"></div>
+                <a href="#" id="lnk-whatsapp" target="_blank" class="btn-whatsapp">Enviar Comprovante via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="page" id="p4">
+            <div class="admin-auth" id="adm-login-box">
+                <h2>Acesso Restrito - Admin</h2>
+                <input type="password" id="adm-pass" placeholder="Introduza a Senha" style="width:100%; padding:12px; margin:15px 0; background:#1e293b; color:white; border:1px solid #475569; border-radius:6px;">
+                <button class="modal-btn" onclick="autenticarAdmin()">Entrar no Painel</button>
+            </div>
+            <div class="admin-dashboard" id="adm-dash-box" style="display:none;">
+                <h2>Painel de Gestão da Rifa</h2>
+                <button class="btn-sortear" onclick="realizarSorteio()">🎲 REALIZAR SORTEIO ALEATÓRIO</button>
+                <div class="sorteio-roleta" id="roleta-num">...</div>
+                <h3 style="margin-top:30px;">Lista de Reservas em Tempo Real</h3>
+                <div class="lista-pedidos" id="adm-pedidos-lista"></div>
+            </div>
+        </div>
+
+        <div class="modal" id="modal-cadastro">
+            <div class="modal-content">
+                <h3>Reservar Número <span id="modal-num-display">0</span></h3>
+                <label>Seu Nome:</label>
+                <input type="text" id="user-nome" placeholder="Nome Completo">
+                <label>Seu Telefone / WhatsApp:</label>
+                <input type="text" id="user-tel" placeholder="(00) 00000-0000">
+                <button class="modal-btn" onclick="confirmarReserva()">Confirmar Escolha</button>
+            </div>
         </div>
     </div>
-
-    <div class="page" id="p3">
-        <div class="sucesso-box">
-            <h1 style="color:#10b981;">Reserva Confirmada!</h1>
-            <p style="margin-top:15px; color:#cbd5e1;">O seu número foi pré-reservado no sistema. Para garantir a sua participação, envie o comprovante por WhatsApp.</p>
-            <div id="sucesso-detalhes" style="font-weight:bold; font-size:18px; margin:20px 0; color:#f59e0b;"></div>
-            <a href="#" id="lnk-whatsapp" target="_blank" class="btn-whatsapp">Enviar Comprovante via WhatsApp</a>
-        </div>
-    </div>
-
-    <div class="page" id="p4">
-        <div class="admin-auth" id="adm-login-box">
-            <h2>Acesso Restrito - Admin</h2>
-            <input type="password" id="adm-pass" placeholder="Introduza a Senha" style="width:100%; padding:12px; margin:15px 0; background:#1e293b; color:white; border:1px solid #475569; border-radius:6px;">
-            <button class="modal-btn" onclick="autenticarAdmin()">Entrar no Painel</button>
-        </div>
-        <div class="admin-dashboard" id="adm-dash-box" style="display:none;">
-            <h2>Painel de Gestão da Rifa</h2>
-            <button class="btn-sortear" onclick="realizarSorteio()">🎲 REALIZAR SORTEIO ALEATÓRIO</button>
-            <div class="sorteio-roleta" id="roleta-num">...</div>
-            
-            <h3 style="margin-top:30px;">Lista de Reservas em Tempo Real</h3>
-            <div class="lista-pedidos" id="adm-pedidos-lista"></div>
-        </div>
-    </div>
-
     <script>
-        // Configurações
         const fbConfig = { apiKey: "AIzaSyBg9aARLdrBmzfOLtd1FH9k48C0QKc_e0c", databaseURL: "https://gerador-rifa-digital-default-rtdb.firebaseio.com/", projectId: "gerador-rifa-digital" };
-        const qtdTotal = parseInt("50");
+        const qtdTotal = parseInt("100");
         const whatsappAdmin = "5571993233142";
         const senhaMaster = "1234";
-        
         let numeroSelecionadoAtual = null;
         let localDB = {};
-
-        // Inicializar Firebase
-        if(fbConfig.apiKey && fbConfig.databaseURL) {
-            firebase.initializeApp(fbConfig);
-            var database = firebase.database();
-        } else {
-            console.log('Aviso: Firebase não configurado no Gerador.');
-        }
-
-        function irPara(idPagina) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('p' + idPagina).classList.add('active');
-            if(idPagina === 2) renderizarGrid();
-        }
-
-        function toggleAudio() {
-            const audio = document.getElementById('bg-audio');
-            if (audio.paused) {
-                audio.play().catch(() => alert('Clique na tela para iniciar o som'));
-                document.querySelector('.btn-audio').innerText = "🔇";
-            } else {
-                audio.pause();
-                document.querySelector('.btn-audio').innerText = "🔊";
-            }
-        }
-
-        // Firebase Listener
-        if(database) {
-            database.ref('rifa_numeros').on('value', (snapshot) => {
-                localDB = snapshot.val() || {};
-                if(document.getElementById('p2').classList.contains('active')) renderizarGrid();
-                if(document.getElementById('adm-dash-box').style.display === 'block') atualizarDashboardAdmin();
-            });
-        }
-
-        function renderizarGrid() {
-            const container = document.getElementById('container-numbers');
-            container.innerHTML = '';
-            for(let i = 1; i <= qtdTotal; i++) {
-                const box = document.createElement('div');
-                box.className = 'num-box';
-                box.innerText = i;
-                
-                const dadosNum = localDB[i] || { status: 'disponivel' };
-                
-                if(dadosNum.status === 'pago') {
-                    box.style.background = '#10b981';
-                    box.style.color = '#fff';
-                } else if(dadosNum.status === 'reservado') {
-                    box.style.background = '#f59e0b';
-                    box.style.color = '#fff';
-                } else {
-                    box.style.background = '#cbd5e1';
-                }
-
-                box.onclick = () => clicarNumero(i, dadosNum.status);
-                container.appendChild(box);
-            }
-        }
-
-        function clicarNumero(num, status) {
-            if(status !== 'disponivel') {
-                alert('Este número já se encontra ocupado!');
-                return;
-            }
-            numeroSelecionadoAtual = num;
-            document.getElementById('modal-num-display').innerText = num;
-            document.getElementById('modal-cadastro').style.display = 'flex';
-        }
-
-        function confirmarReserva() {
-            const nome = document.getElementById('user-nome').value.trim();
-            const tel = document.getElementById('user-tel').value.trim();
-            
-            if(!nome || !tel) { alert('Preencha todos os campos!'); return; }
-            
-            if(database) {
-                database.ref('rifa_numeros/' + numeroSelecionadoAtual).set({
-                    status: 'reservado',
-                    nome: nome,
-                    telefone: tel
-                }).then(() => {
-                    document.getElementById('modal-cadastro').style.display = 'none';
-                    document.getElementById('sucesso-detalhes').innerText = "Número: " + numeroSelecionadoAtual + " | Nome: " + nome;
-                    
-                    const txtZap = "Olá Administrador, escolhi o número " + numeroSelecionadoAtual + " (" + nome + "). Segue o comprovante de pagamento em anexo.";
-                    document.getElementById('lnk-whatsapp').href = "https://api.whatsapp.com/send?phone=" + whatsappAdmin + "&text=" + encodeURIComponent(txtZap);
-                    irPara(3);
-                });
-            }
-        }
-
-        function autenticarAdmin() {
-            const pass = document.getElementById('adm-pass').value;
-            if(pass === senhaMaster) {
-                document.getElementById('adm-login-box').style.display = 'none';
-                document.getElementById('adm-dash-box').style.display = 'block';
-                atualizarDashboardAdmin();
-            } else {
-                alert('Senha Incorreta!');
-            }
-        }
-
-        function atualizarDashboardAdmin() {
-            const container = document.getElementById('adm-pedidos-lista');
-            container.innerHTML = '';
-            let temPedidos = false;
-
-            for(let i = 1; i <= qtdTotal; i++) {
-                if(localDB[i] && localDB[i].status !== 'disponivel') {
-                    temPedidos = true;
-                    const item = localDB[i];
-                    const row = document.createElement('div');
-                    row.className = 'pedido-row';
-                    row.innerHTML = "<div><strong>#" + i + "</strong> - " + item.nome + " (" + item.telefone + ") [" + item.status.toUpperCase() + "]</div>";
-                    
-                    const btnStatus = document.createElement('button');
-                    btnStatus.className = 'btn-adm-status';
-                    if(item.status === 'reservado') {
-                        btnStatus.innerText = "Confirmar Pago";
-                        btnStatus.style.background = '#10b981';
-                        btnStatus.style.color = '#fff';
-                        btnStatus.onclick = () => alterarStatusNumero(i, 'pago');
-                    } else {
-                        btnStatus.innerText = "Liberar Número";
-                        btnStatus.style.background = '#ef4444';
-                        btnStatus.style.color = '#fff';
-                        btnStatus.onclick = () => alterarStatusNumero(i, 'disponivel');
-                    }
-                    
-                    row.appendChild(btnStatus);
-                    container.appendChild(row);
-                }
-            }
-            if(!temPedidos) container.innerHTML = '<p style="color:#94a3b8; font-size:14px;">Nenhuma reserva efetuada até ao momento.</p>';
-        }
-
-        function alterarStatusNumero(num, novoStatus) {
-            if(database) {
-                if(novoStatus === 'disponivel') {
-                    database.ref('rifa_numeros/' + num).remove();
-                } else {
-                    database.ref('rifa_numeros/' + num + '/status').set(novoStatus);
-                }
-            }
-        }
-
-        function realizarSorteio() {
-            let pagos = [];
-            for(let i = 1; i <= qtdTotal; i++) {
-                if(localDB[i] && localDB[i].status === 'pago') {
-                    pagos.push({ numero: i, nome: localDB[i].nome });
-                }
-            }
-
-            if(pagos.length === 0) {
-                alert('Não existem números com status PAGO para realizar o sorteio!');
-                return;
-            }
-
-            let duracaoAnimacao = 3000; 
-            let intervaloRoleta = setInterval(() => {
-                let numeroAleatorioSimulado = Math.floor(Math.random() * qtdTotal) + 1;
-                document.getElementById('roleta-num').innerText = "#" + numeroAleatorioSimulado;
-            }, 70);
-
-            setTimeout(() => {
-                clearInterval(intervaloRoleta);
-                let sorteado = pagos[Math.floor(Math.random() * pagos.length)];
-                document.getElementById('roleta-num').innerHTML = "<span style='color:#10b981;'>Vencedor: #" + sorteado.numero + "</span><br><span style='font-size:20px; color:white;'>" + sorteado.nome + "</span>";
-            }, duracaoAnimacao);
-        }
-
+        if(fbConfig.apiKey && fbConfig.databaseURL) { firebase.initializeApp(fbConfig); var database = firebase.database(); }
+        function irPara(idPagina) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('p' + idPagina).classList.add('active'); if(idPagina === 2) renderizarGrid(); }
+        function toggleAudio() { const audio = document.getElementById('bg-audio'); if (audio.paused) { audio.play(); document.querySelector('.btn-audio').innerText = "🔇"; } else { audio.pause(); document.querySelector('.btn-audio').innerText = "🔊"; } }
+        if(database) { database.ref('rifa_numeros').on('value', (snapshot) => { localDB = snapshot.val() || {}; if(document.getElementById('p2').classList.contains('active')) renderizarGrid(); if(document.getElementById('adm-dash-box').style.display === 'block') atualizarDashboardAdmin(); }); }
+        function renderizarGrid() { const container = document.getElementById('container-numbers'); container.innerHTML = ''; for(let i = 1; i <= qtdTotal; i++) { const box = document.createElement('div'); box.className = 'num-box'; box.innerText = i; const dadosNum = localDB[i] || { status: 'disponivel' }; if(dadosNum.status === 'pago') { box.style.background = '#10b981'; box.style.color = '#fff'; } else if(dadosNum.status === 'reservado') { box.style.background = '#f59e0b'; box.style.color = '#fff'; } else { box.style.background = '#cbd5e1'; } box.onclick = () => clicarNumero(i, dadosNum.status); container.appendChild(box); } }
+        function clicarNumero(num, status) { if(status !== 'disponivel') { alert('Este número já se encontra ocupado!'); return; } numeroSelecionadoAtual = num; document.getElementById('modal-num-display').innerText = num; document.getElementById('modal-cadastro').style.display = 'flex'; }
+        function confirmarReserva() { const nome = document.getElementById('user-nome').value.trim(); const tel = document.getElementById('user-tel').value.trim(); if(!nome || !tel) { alert('Preencha todos os campos!'); return; } if(database) { database.ref('rifa_numeros/' + numeroSelecionadoAtual).set({ status: 'reservado', nome: nome, telefone: tel }).then(() => { document.getElementById('modal-cadastro').style.display = 'none'; document.getElementById('sucesso-detalhes').innerText = "Número: " + numeroSelecionadoAtual + " | Nome: " + nome; const txtZap = "Olá Administrador, escolhi o número " + numeroSelecionadoAtual + " (" + nome + "). Segue o comprovante de pagamento em anexo."; document.getElementById('lnk-whatsapp').href = "https://api.whatsapp.com/send?phone=" + whatsappAdmin + "&text=" + encodeURIComponent(txtZap); irPara(3); }); } }
+        function autenticarAdmin() { const pass = document.getElementById('adm-pass').value; if(pass === senhaMaster) { document.getElementById('adm-login-box').style.display = 'none'; document.getElementById('adm-dash-box').style.display = 'block'; atualizarDashboardAdmin(); } else { alert('Senha Incorreta!'); } }
+        function atualizarDashboardAdmin() { const container = document.getElementById('adm-pedidos-lista'); container.innerHTML = ''; let temPedidos = false; for(let i = 1; i <= qtdTotal; i++) { if(localDB[i] && localDB[i].status !== 'disponivel') { temPedidos = true; const item = localDB[i]; const row = document.createElement('div'); row.className = 'pedido-row'; row.innerHTML = "<div><strong>#" + i + "</strong> - " + item.nome + " (" + item.telefone + ") [" + item.status.toUpperCase() + "]</div>"; const btnStatus = document.createElement('button'); btnStatus.className = 'btn-adm-status'; if(item.status === 'reservado') { btnStatus.innerText = "Confirmar Pago"; btnStatus.style.background = '#10b981'; btnStatus.style.color = '#fff'; btnStatus.onclick = () => alterarStatusNumero(i, 'pago'); } else { btnStatus.innerText = "Liberar Número"; btnStatus.style.background = '#ef4444'; btnStatus.style.color = '#fff'; btnStatus.onclick = () => alterarStatusNumero(i, 'disponivel'); } row.appendChild(btnStatus); container.appendChild(row); } } if(!temPedidos) container.innerHTML = '<p style="color:#94a3b8; font-size:14px;">Nenhuma reserva efetuada até ao momento.</p>'; }
+        function alterarStatusNumero(num, novoStatus) { if(database) { if(novoStatus === 'disponivel') { database.ref('rifa_numeros/' + num).remove(); } else { database.ref('rifa_numeros/' + num + '/status').set(novoStatus); } } }
+        function realizarSorteio() { let pagos = []; for(let i = 1; i <= qtdTotal; i++) { if(localDB[i] && localDB[i].status === 'pago') { pagos.push({ numero: i, nome: localDB[i].nome }); } } if(pagos.length === 0) { alert('Não existem números com status PAGO para realizar o sorteio!'); return; } let duracaoAnimacao = 3000; let intervaloRoleta = setInterval(() => { let numeroAleatorioSimulado = Math.floor(Math.random() * qtdTotal) + 1; document.getElementById('roleta-num').innerText = "#" + numeroAleatorioSimulado; }, 70); setTimeout(() => { clearInterval(intervaloRoleta); let sorteado = pagos[Math.floor(Math.random() * pagos.length)]; document.getElementById('roleta-num').innerHTML = "<span style='color:#10b981;'>Vencedor: #" + sorteado.numero + "</span><br><span style='font-size:20px; color:white;'>" + sorteado.nome + "</span>"; }, duracaoAnimacao); }
         if(window.location.hash === '#admin') irPara(4);
-        
-        /* © 2026 Material Exclusivo para Alunos */
     </script>
 </body>
 </html>
