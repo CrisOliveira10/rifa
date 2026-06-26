@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chá Rifa Digital Sophie</title>
+    <title>Chá Rifa Digital </title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
@@ -56,8 +56,8 @@
 
         <div class="page" id="p2">
             <div class="grid-header">
-                <h1 style="color: #fff; font-size: 24px; margin-bottom: 5px;">Chá Rifa Digital Sophie</h1>
-                <p style="color: #cbd5e1; margin-bottom: 15px; font-size: 14px;">Participe e concorra a prémio de R$ 300,00</p>
+                <h1 style="color: #fff; font-size: 24px; margin-bottom: 5px;">Chá Rifa Digital </h1>
+                <p style="color: #cbd5e1; margin-bottom: 15px; font-size: 14px;">Participe e concorra ao prémio de R$ 300,00</p>
                 <h2 style="color: #fff; font-size: 18px;">Escolha os seus Números</h2>
                 <p style="font-size:13px; color:#94a3b8; margin-top:5px;">Clique em cima do número disponível</p>
             </div>
@@ -105,22 +105,24 @@
         </div>
     </div>
     <script>
+        const idCliente = "sophia";
+        const refPath = 'rifa_numeros/' + idCliente + '/';
         const fbConfig = { apiKey: "AIzaSyBg9aARLdrBmzfOLtd1FH9k48C0QKc_e0c", databaseURL: "https://gerador-rifa-digital-default-rtdb.firebaseio.com/", projectId: "gerador-rifa-digital" };
         const qtdTotal = parseInt("100");
         const whatsappAdmin = "5571993233142";
-        const senhaMaster = "1234";
+        const senhaMaster = "3142";
         let numeroSelecionadoAtual = null;
         let localDB = {};
         if(fbConfig.apiKey && fbConfig.databaseURL) { firebase.initializeApp(fbConfig); var database = firebase.database(); }
         function irPara(idPagina) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('p' + idPagina).classList.add('active'); if(idPagina === 2) renderizarGrid(); }
         function toggleAudio() { const audio = document.getElementById('bg-audio'); if (audio.paused) { audio.play(); document.querySelector('.btn-audio').innerText = "🔇"; } else { audio.pause(); document.querySelector('.btn-audio').innerText = "🔊"; } }
-        if(database) { database.ref('rifa_numeros').on('value', (snapshot) => { localDB = snapshot.val() || {}; if(document.getElementById('p2').classList.contains('active')) renderizarGrid(); if(document.getElementById('adm-dash-box').style.display === 'block') atualizarDashboardAdmin(); }); }
+        if(database) { database.ref(refPath).on('value', (snapshot) => { localDB = snapshot.val() || {}; if(document.getElementById('p2').classList.contains('active')) renderizarGrid(); if(document.getElementById('adm-dash-box').style.display === 'block') atualizarDashboardAdmin(); }); }
         function renderizarGrid() { const container = document.getElementById('container-numbers'); container.innerHTML = ''; for(let i = 1; i <= qtdTotal; i++) { const box = document.createElement('div'); box.className = 'num-box'; box.innerText = i; const dadosNum = localDB[i] || { status: 'disponivel' }; if(dadosNum.status === 'pago') { box.style.background = '#10b981'; box.style.color = '#fff'; } else if(dadosNum.status === 'reservado') { box.style.background = '#f59e0b'; box.style.color = '#fff'; } else { box.style.background = '#cbd5e1'; } box.onclick = () => clicarNumero(i, dadosNum.status); container.appendChild(box); } }
         function clicarNumero(num, status) { if(status !== 'disponivel') { alert('Este número já se encontra ocupado!'); return; } numeroSelecionadoAtual = num; document.getElementById('modal-num-display').innerText = num; document.getElementById('modal-cadastro').style.display = 'flex'; }
-        function confirmarReserva() { const nome = document.getElementById('user-nome').value.trim(); const tel = document.getElementById('user-tel').value.trim(); if(!nome || !tel) { alert('Preencha todos os campos!'); return; } if(database) { database.ref('rifa_numeros/' + numeroSelecionadoAtual).set({ status: 'reservado', nome: nome, telefone: tel }).then(() => { document.getElementById('modal-cadastro').style.display = 'none'; document.getElementById('sucesso-detalhes').innerText = "Número: " + numeroSelecionadoAtual + " | Nome: " + nome; const txtZap = "Olá Administrador, escolhi o número " + numeroSelecionadoAtual + " (" + nome + "). Segue o comprovante de pagamento em anexo."; document.getElementById('lnk-whatsapp').href = "https://api.whatsapp.com/send?phone=" + whatsappAdmin + "&text=" + encodeURIComponent(txtZap); irPara(3); }); } }
+        function confirmarReserva() { const nome = document.getElementById('user-nome').value.trim(); const tel = document.getElementById('user-tel').value.trim(); if(!nome || !tel) { alert('Preencha todos os campos!'); return; } if(database) { database.ref(refPath + numeroSelecionadoAtual).set({ status: 'reservado', nome: nome, telefone: tel }).then(() => { document.getElementById('modal-cadastro').style.display = 'none'; document.getElementById('sucesso-detalhes').innerText = "Número: " + numeroSelecionadoAtual + " | Nome: " + nome; const txtZap = "Olá Administrador, escolhi o número " + numeroSelecionadoAtual + " (" + nome + "). Segue o comprovante de pagamento em anexo."; document.getElementById('lnk-whatsapp').href = "https://api.whatsapp.com/send?phone=" + whatsappAdmin + "&text=" + encodeURIComponent(txtZap); irPara(3); }); } }
         function autenticarAdmin() { const pass = document.getElementById('adm-pass').value; if(pass === senhaMaster) { document.getElementById('adm-login-box').style.display = 'none'; document.getElementById('adm-dash-box').style.display = 'block'; atualizarDashboardAdmin(); } else { alert('Senha Incorreta!'); } }
         function atualizarDashboardAdmin() { const container = document.getElementById('adm-pedidos-lista'); container.innerHTML = ''; let temPedidos = false; for(let i = 1; i <= qtdTotal; i++) { if(localDB[i] && localDB[i].status !== 'disponivel') { temPedidos = true; const item = localDB[i]; const row = document.createElement('div'); row.className = 'pedido-row'; row.innerHTML = "<div><strong>#" + i + "</strong> - " + item.nome + " (" + item.telefone + ") [" + item.status.toUpperCase() + "]</div>"; const btnStatus = document.createElement('button'); btnStatus.className = 'btn-adm-status'; if(item.status === 'reservado') { btnStatus.innerText = "Confirmar Pago"; btnStatus.style.background = '#10b981'; btnStatus.style.color = '#fff'; btnStatus.onclick = () => alterarStatusNumero(i, 'pago'); } else { btnStatus.innerText = "Liberar Número"; btnStatus.style.background = '#ef4444'; btnStatus.style.color = '#fff'; btnStatus.onclick = () => alterarStatusNumero(i, 'disponivel'); } row.appendChild(btnStatus); container.appendChild(row); } } if(!temPedidos) container.innerHTML = '<p style="color:#94a3b8; font-size:14px;">Nenhuma reserva efetuada até ao momento.</p>'; }
-        function alterarStatusNumero(num, novoStatus) { if(database) { if(novoStatus === 'disponivel') { database.ref('rifa_numeros/' + num).remove(); } else { database.ref('rifa_numeros/' + num + '/status').set(novoStatus); } } }
+        function alterarStatusNumero(num, novoStatus) { if(database) { if(novoStatus === 'disponivel') { database.ref(refPath + num).remove(); } else { database.ref(refPath + num + '/status').set(novoStatus); } } }
         function realizarSorteio() { let pagos = []; for(let i = 1; i <= qtdTotal; i++) { if(localDB[i] && localDB[i].status === 'pago') { pagos.push({ numero: i, nome: localDB[i].nome }); } } if(pagos.length === 0) { alert('Não existem números com status PAGO para realizar o sorteio!'); return; } let duracaoAnimacao = 3000; let intervaloRoleta = setInterval(() => { let numeroAleatorioSimulado = Math.floor(Math.random() * qtdTotal) + 1; document.getElementById('roleta-num').innerText = "#" + numeroAleatorioSimulado; }, 70); setTimeout(() => { clearInterval(intervaloRoleta); let sorteado = pagos[Math.floor(Math.random() * pagos.length)]; document.getElementById('roleta-num').innerHTML = "<span style='color:#10b981;'>Vencedor: #" + sorteado.numero + "</span><br><span style='font-size:20px; color:white;'>" + sorteado.nome + "</span>"; }, duracaoAnimacao); }
         if(window.location.hash === '#admin') irPara(4);
     </script>
