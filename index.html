@@ -145,13 +145,39 @@
         
         .sucesso-box { padding: 20px; text-align: center; padding-top: 50px; }
         .btn-whatsapp { display:inline-block; background:#25D366; color:white; padding:15px 25px; border-radius:8px; text-decoration:none; font-weight:bold; }
+        
+        .legendas{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:18px;
+            flex-wrap:wrap;
+            margin:0 0 20px;
+        }
+
+        .leg-item{
+            display:flex;
+            align-items:center;
+            gap:6px;
+            color:#cbd5e1;
+            font-size:13px;
+            font-weight:500;
+        }
+
+        .leg-cor{
+            width:14px;
+            height:14px;
+            border-radius:4px;
+            border:1px solid rgba(255,255,255,.25);
+            flex-shrink:0;
+        }
     </style>
 </head>
 <body>
     <audio id="bg-audio" loop src="audio.mp3" playsinline></audio>
     <div id="app-frame">
         <div class="page active" id="p1">
-            <div class="capa-aspect-box" style="background-image: url('https://res.cloudinary.com/dtshawz5x/image/upload/v1782492391/capa_qgyjrl.png');">
+            <div class="capa-aspect-box" style="background-image: url('https://res.cloudinary.com/dtshawz5x/image/upload/v1782567689/capa_xjg87w.gif');">
                 <button class="btn-audio" onclick="toggleAudio()">🔊</button>
                 <button class="btn-proximo" onclick="irPara(2)">Participar ➔</button>
             </div>
@@ -159,11 +185,27 @@
         <div class="page" id="p2">
             <div class="grid-header">
                 <h1 style="color: #fff; font-size: 24px; margin-bottom: 5px;">Chá Rifa Digital </h1>
-                <p style="color: #cbd5e1; margin-bottom: 15px; font-size: 14px;">Participe e concorra ao prémio de R$ 300,00</p>
-                <h2 style="color: #fff; font-size: 18px;">Escolha os seus Números</h2>
+                <p style="color: #cbd5e1; margin-bottom: 15px; font-size: 14px;">Participe e concorra ao prémio de R$ 200,00</p>
+                
+                <div class="legendas">
+                    <div class="leg-item">
+                        <span class="leg-cor" style="background:#cbd5e1"></span>
+                        <span>Livre</span>
+                    </div>
+                    <div class="leg-item">
+                        <span class="leg-cor" style="background:#f59e0b"></span>
+                        <span>Reservado</span>
+                    </div>
+                    <div class="leg-item">
+                        <span class="leg-cor" style="background:#10b981"></span>
+                        <span>Pago</span>
+                    </div>
+                </div>
             </div>
+
             <div class="grid-container" id="container-numbers"></div>
         </div>
+
         <div class="page" id="p3">
             <div class="sucesso-box">
                 <h1 style="color:#10b981;">Reserva Confirmada!</h1>
@@ -197,9 +239,9 @@
         const idCliente = "sophia";
         const refPath = 'rifa_numeros/' + idCliente + '/';
         const fbConfig = { apiKey: "AIzaSyBg9aARLdrBmzfOLtd1FH9k48C0QKc_e0c", databaseURL: "https://gerador-rifa-digital-default-rtdb.firebaseio.com/", projectId: "gerador-rifa-digital" };
-        const qtdTotal = parseInt("100");
+        const qtdTotal = parseInt("50");
         const whatsappAdmin = "5571993233142";
-        const senhaMaster = "3142";
+        const senhaMaster = "1234";
         let numeroSelecionadoAtual = null;
         let localDB = {};
         if(fbConfig.apiKey && fbConfig.databaseURL) { firebase.initializeApp(fbConfig); var database = firebase.database(); }
